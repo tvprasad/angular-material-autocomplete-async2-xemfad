@@ -6,45 +6,86 @@ import { switchMap, debounceTime, tap, finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { MatAutocompleteSelectedEvent,  MatAutocompleteTrigger,  VERSION} from '@angular/material';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs/Subscription';
+import { startWith } from 'rxjs/operators/startWith';
 
 @Component({
   selector: 'my-app',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  filteredUsers: User[] = [];
+// export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AppComponent implements AfterViewInit, OnDestroy {
+  // filteredUsers: User[] = [];
+   filteredStates: User[] = [];
   usersForm: FormGroup;
   isLoading = false;
 
   version = VERSION;
   stateCtrl: FormControl;
-  filteredStates: Observable<string[] | null>;
+  // filteredStates: Observable<string[] | null>;
+  // filteredStates: Observable<any[] | null>;
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   subscription: Subscription;
   
-  constructor(private fb: FormBuilder, private appService: AppService) {}
+  constructor(private fb: FormBuilder, private appService: AppService) {
 
-  ngOnInit() {
-    this.usersForm = this.fb.group({
-      userInput: null
-    })
+    this.stateCtrl = new FormControl();
+    console.log('this.stateCtrl = ' +this.stateCtrl);
 
-      this.usersForm.get('userInput').valueChanges
-       .pipe(
-          debounceTime(300),
+    // this.filteredStates = this.stateCtrl.valueChanges.pipe(
+        this.stateCtrl.valueChanges.pipe(
+      // startWith(null),
+      // map(name => this.filterStates(name))
+      debounceTime(300),
           tap(() => this.isLoading = true),
           switchMap(value => this.appService.search({name: value}, 1)
           .pipe(
             finalize(() => this.isLoading = false),
             )
           )
-        )
-        .subscribe(users => this.filteredUsers = users.results);
-  }
+    ).
+    subscribe(users => this.filteredStates = users.results);
+
+    //   this.usersForm = this.fb.group({
+    //   userInput: null,
+    //   stateName: null
+    // })
+    //  // this.usersForm.get('userInput').valueChanges
+    //    this.usersForm.get('stateName').valueChanges
+    //    .pipe(
+    //       debounceTime(300),
+    //       tap(() => this.isLoading = true),
+    //       switchMap(value => this.appService.search({name: value}, 1)
+    //       .pipe(
+    //         finalize(() => this.isLoading = false),
+    //         )
+    //       )
+    //     )
+    //     .subscribe(users => this.filteredUsers = users.results);
+
+   }
+
+  // ngOnInit() {
+  //   this.usersForm = this.fb.group({
+  //     userInput: null,
+  //     stateName: null
+  //   })
+
+  //     // this.usersForm.get('userInput').valueChanges
+  //      this.usersForm.get('stateName').valueChanges
+  //      .pipe(
+  //         debounceTime(300),
+  //         tap(() => this.isLoading = true),
+  //         switchMap(value => this.appService.search({name: value}, 1)
+  //         .pipe(
+  //           finalize(() => this.isLoading = false),
+  //           )
+  //         )
+  //       )
+  //       .subscribe(users => this.filteredUsers = users.results);
+  // }
 
   displayFn(user: User) {
     if (user) { return user.name; }

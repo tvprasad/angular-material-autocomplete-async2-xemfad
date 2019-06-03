@@ -1,10 +1,11 @@
 <form class="example-form" [formGroup]='usersForm'>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Choose a user" [matAutocomplete]="auto" formControlName='userInput'>
+    <input matInput placeholder="Choose a user" [matAutocomplete]="auto" [formControl]="stateCtrl">
+      <!-- formControlName='stateName'> -->
   </mat-form-field>
-  <span>Your choice is: {{usersForm.get('userInput').value | json}}</span>
+  <span>Your choice is: {{usersForm.get('stateName').value | json}}</span>
 
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"  (optionSelected)="handler($event)">
     <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="50"></mat-spinner></mat-option>
     <ng-container *ngIf="!isLoading">
       <mat-option *ngFor="let user of filteredUsers" [value]="user">
@@ -13,5 +14,10 @@
       </mat-option>
     </ng-container>
   </mat-autocomplete>
+
+  <br>
+  <mat-form-field fxFlex="10">
+            <input matInput type="text" placeholder="Street" formControlName="userInput">          
+          </mat-form-field>
 </form>
 
